@@ -19,11 +19,13 @@ const Home: NextPage = () => {
     <form onSubmit={handleSubmit} className={styles.container}>
       <input
         type="email"
+        name="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
       <input
         type="password"
+        name="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
