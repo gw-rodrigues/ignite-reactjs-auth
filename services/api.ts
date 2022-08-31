@@ -1,5 +1,6 @@
 import axios, { AxiosError } from "axios";
 import { parseCookies, setCookie } from "nookies";
+import { signOut } from "../contexts/AuthContext";
 
 let cookies = parseCookies();
 let isRefreshing = false; //verifica se estamos a atualizar o token
@@ -35,13 +36,14 @@ api.interceptors.response.use(
   },
   (error: AxiosError<AxiosErrorProps>) => {
     //error - executar este código, error tipagem any, assim usamos AxiosError tem todas as tipagens deste error.
+    console.log(error.response?.status, error.response?.data.code);
     if (error.response?.status === 401) {
       if (error.response?.data.code === "token.expired") {
         //renovar token
         cookies = parseCookies();
         //obter o refreshToken dos cookies
         const { "nextauth.refreshToken": refreshToken } = cookies;
-        const originalConfig = error.config; //todas as configurações que foi feito para backend, todas informacoes precisas para repetir para backend, rotas chamei, quais parâmetros enviados, qual callback apos a requisição, todas informações necessárias
+        const originalConfig = error.config; //todas as configurações que foi feito para backend, todas informações precisas para repetir para backend, rotas chamei, quais parâmetros enviados, qual callback apos a requisição, todas informações necessárias
 
         if (!isRefreshing) {
           isRefreshing = true; //coloca true para parar todas as requisições com token antigo
@@ -99,8 +101,12 @@ api.interceptors.response.use(
           });
         });
       } else {
-        //deslogar user
+        //iremos tratar aqui qualquer erro 401 que nao foi indicado acima ex: token, iremos desligar o user
+        //importaremos a função signOut do AuthContext
+        signOut();
       }
     }
+    //importante que no final todos if do interceptor, se nao cair em nenhum if, então deixamos error do Axios continuar a acontecer*
+    return Promise.reject(error);
   }
 );
