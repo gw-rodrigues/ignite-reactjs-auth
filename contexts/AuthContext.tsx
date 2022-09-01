@@ -51,6 +51,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           setUser({ email, permissions, roles }); //atualizamos info do user
         })
         .catch(() => {
+          //precisar saber se é undefined para nao rodar lado servidor
           if (typeof window !== "undefined") {
             signOut();
           }
@@ -89,7 +90,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       //precisamos adicionar o token ao headers, antes de redirecionar user, se nao sempre irá fazer uma requisição com Authorization undefined para o back-end
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-      Router.push("/dashboard "); //redirecionar user para uma página, também há o {useRouter} - faz mesmo
+      Router.push("/dashboard ");
+      //redirecionar user para uma página, também há o {useRouter} - faz mesmo
+      //Router so funciona no client, então para funcionar no server temos fazer return com redirect dentro
+      //iremos no api, realizar um erro (object error), que ira retornar para o SSR
     } catch (error) {
       console.log(error);
     }
