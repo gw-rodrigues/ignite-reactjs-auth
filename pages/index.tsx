@@ -1,12 +1,8 @@
-import type {
-  GetServerSideProps,
-  GetServerSidePropsContext,
-  NextPage,
-} from "next";
-import { parseCookies } from "nookies";
+import type { GetServerSidePropsContext, NextPage } from "next";
 import { FormEvent, useContext, useState } from "react";
 import { AuthContext } from "../contexts/AuthContext";
 import styles from "../styles/Home.module.css";
+import { withSSRGuest } from "../utils/withSSRGuest";
 
 const Home: NextPage = () => {
   const [email, setEmail] = useState("");
@@ -43,22 +39,14 @@ const Home: NextPage = () => {
 //há nao ser se for HTTPOnly cookies então é somente pelo server.
 
 //Vamos verificar os cookies pelo lado servidor para redirecionar o user
-export const getServerSideProps: GetServerSideProps = async (
-  ctx: GetServerSidePropsContext
-) => {
-  //Com parse cookies podemos obter os cookies, em array, temos que usar var: ctx, outras como req ou req.cookies, ctx.req.cookies nao funcionam no parse
-  const cookies = parseCookies(ctx);
-
-  //verificamos se existe, e vamos redirecionar para o /dashboard
-  if (cookies["nextauth.token"]) {
-    return {
-      redirect: {
-        destination: "/dashboard",
-        permanent: false, //falar se vai sempre acontecer o redirecionamento ou só dessa ver por uma condição
-      },
-    };
+//Programação funcional = como usamos .map, .reduce, .filter, .every, .some
+//Vamos utilizar método HighOrderFunction para enviar uma função para o utils/withSSRGuest, que irá verificar o user e irá retorna uma função *GetServerSideProps
+//<P> == ...= withSSRGuest<{ users: string[]; }>(...)... é o tipo de retorno, que será passado entre/para as outras funções que iram ser chamadas e terá haver retorno desse tipo dentro "props: {users: [...]}"
+//<P> == ...= withSSRGuest(...)... caso removemos tipagem, podemos retornar qualquer tipo de retorno
+export const getServerSideProps = withSSRGuest(
+  async (ctx: GetServerSidePropsContext) => {
+    return { props: {} };
   }
-  return { props: {} };
-};
+);
 
 export default Home;
