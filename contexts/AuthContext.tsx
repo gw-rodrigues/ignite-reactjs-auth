@@ -75,7 +75,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       //4 param: {} informações adicionais do cookie
       setCookie(undefined, "nextauth.token", token, {
         maxAge: 60 * 60 * 24 * 30, //30 dias - responsabilidade do back-end verificar expiração do token e realizar acoes necessárias
-        path: "/",
+        path: "/", //qual rota "/" em todas as rotas ou "/dashboard" apenas nessa rota, etc.
       });
       setCookie(undefined, "nextauth.refreshToken", refreshToken, {
         maxAge: 60 * 60 * 24 * 30,
