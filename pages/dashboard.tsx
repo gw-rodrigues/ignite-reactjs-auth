@@ -1,8 +1,9 @@
-import type { NextPage } from "next";
+import type { GetServerSidePropsContext, NextPage } from "next";
 import { useContext, useEffect } from "react";
 import { AuthContext } from "../contexts/AuthContext";
 import { api } from "../services/api";
 import styles from "../styles/Home.module.css";
+import { withSSRAuth } from "../utils/withSSRAuth";
 
 const Dashboard: NextPage = () => {
   const { user, isAuthenticated } = useContext(AuthContext);
@@ -20,5 +21,12 @@ const Dashboard: NextPage = () => {
     </div>
   );
 };
+
+//Vamos verificar os cookies pelo lado servidor para redirecionar o user
+export const getServerSideProps = withSSRAuth(
+  async (ctx: GetServerSidePropsContext) => {
+    return { props: {} };
+  }
+);
 
 export default Dashboard;
