@@ -2,6 +2,7 @@ import axios, { AxiosError } from "axios";
 import { GetServerSidePropsContext } from "next";
 import { parseCookies, setCookie } from "nookies";
 import { signOut } from "../contexts/AuthContext";
+import { AuthTokenError } from "./errors/authTokenError";
 
 let isRefreshing = false; //verifica se estamos a atualizar o token
 
@@ -87,6 +88,10 @@ export function setupAPIClient(
                   (request) => request.onFailure(error) //caso for error, fazemos onFailure e passamos o error
                 );
                 failedRequestsQueue = [];
+
+                //precisar saber se é undefined para nao rodar lado servidor
+                //importaremos a função signOut do AuthContext
+                //fazemos verificação se tipo window esta ser executado no browser com javascript ativado
                 if (typeof window !== "undefined") {
                   signOut();
                 }
@@ -113,9 +118,13 @@ export function setupAPIClient(
           });
         } else {
           //iremos tratar aqui qualquer erro 401 que nao foi indicado acima ex: token, iremos desligar o user
-          //importaremos a função signOut do AuthContext
-          //fazemos verificação se tipo window esta ser executado no browser com javascript ativado
-          if (typeof window !== "undefined") {
+          if (typeof window === "undefined") {
+            //iremos retornar error caso o browser/typeof window for undefined sem javascript para fazer operação através do server
+            //iremos retornar um error que criamos nos services/error/authTokenError para nao ser error genérico
+            return Promise.reject(new AuthTokenError());
+          } else {
+            //importaremos a função signOut do AuthContext
+            //fazemos verificação se tipo window esta ser executado no browser com javascript ativado
             signOut();
           }
         }
