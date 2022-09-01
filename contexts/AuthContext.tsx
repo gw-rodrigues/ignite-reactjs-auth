@@ -31,7 +31,7 @@ export function signOut() {
   //iremos apagar os cookies e redirecionar para home
   destroyCookie(undefined, "nextauth.token");
   destroyCookie(undefined, "nextauth.refreshToken");
-  Router.push("/");
+  Router.push("/"); //so funciona lado browser, e pelo server nao
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
@@ -51,7 +51,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
           setUser({ email, permissions, roles }); //atualizamos info do user
         })
         .catch(() => {
-          signOut();
+          if (typeof window !== "undefined") {
+            signOut();
+          }
         });
     }
   }, []);
