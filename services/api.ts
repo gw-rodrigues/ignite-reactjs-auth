@@ -79,6 +79,9 @@ api.interceptors.response.use(
                 (request) => request.onFailure(error) //caso for error, fazemos onFailure e passamos o error
               );
               failedRequestsQueue = [];
+              if (typeof window !== "undefined") {
+                signOut();
+              }
             })
             .finally(() => (isRefreshing = false));
         }
@@ -103,7 +106,10 @@ api.interceptors.response.use(
       } else {
         //iremos tratar aqui qualquer erro 401 que nao foi indicado acima ex: token, iremos desligar o user
         //importaremos a função signOut do AuthContext
-        signOut();
+        //fazemos verificação se tipo window esta ser executado no browser com javascript ativado
+        if (typeof window !== "undefined") {
+          signOut();
+        }
       }
     }
     //importante que no final todos if do interceptor, se nao cair em nenhum if, então deixamos error do Axios continuar a acontecer*
