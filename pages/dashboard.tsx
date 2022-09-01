@@ -1,6 +1,7 @@
 import type { GetServerSidePropsContext, NextPage } from "next";
 import { useContext, useEffect } from "react";
 import { AuthContext } from "../contexts/AuthContext";
+import { setupAPIClient } from "../services/api";
 import { api } from "../services/apiClient";
 import styles from "../styles/Home.module.css";
 import { withSSRAuth } from "../utils/withSSRAuth";
@@ -23,8 +24,12 @@ const Dashboard: NextPage = () => {
 };
 
 //Vamos verificar os cookies pelo lado servidor para redirecionar o user
+//usando o HighOrderFunctions
 export const getServerSideProps = withSSRAuth(
   async (ctx: GetServerSidePropsContext) => {
+    //realiza request com setupAPiClient (que tem dentro api-axios) e todas as funções de validação e refreshToken
+    const apiClient = setupAPIClient(ctx);
+    const response = await apiClient.get("/me");
     return { props: {} };
   }
 );
