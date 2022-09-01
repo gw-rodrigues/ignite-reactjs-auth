@@ -3,7 +3,8 @@ import {
   GetServerSidePropsContext,
   GetServerSidePropsResult,
 } from "next";
-import { parseCookies } from "nookies";
+import { destroyCookie, parseCookies } from "nookies";
+import { AuthTokenError } from "../services/errors/authTokenError";
 
 //<P> é uma tipagem, que foi definida anteriormente na função original e esta sendo passada para as outras funções
 
@@ -30,7 +31,34 @@ export function withSSRAuth<P>(fn: GetServerSideProps<P>): GetServerSideProps {
       };
     }
 
-    //caso nao existir o cookie retornamos a função original/recebemos como parâmetro
-    return await fn(ctx);
+    //para nao ficarmos a repetir o código todas vez/todas páginas que der um error de authTokenError
+    //assim recebemos a função original e caso de error de auth do token, obtemos o error, eliminamos cookies e redirecionamos o user
+    try {
+      //caso nao existir o cookie retornamos a função original/recebemos como parâmetro
+      return await fn(ctx);
+    } catch (error) {
+      //só redirecionamos o user caso for AuthTokenError
+      if (error instanceof AuthTokenError) {
+        //caso servidor for reiniciado e der o error authTokenError
+        //capturamos o error e eliminados os cookies do user através do server - se nao forem eliminados ficaria a fazer redirect da home,login para/de volta para o dashboard
+        //redirecionamos os users através do server para página home, login, etc
+        destroyCookie(ctx, "nextauth.token");
+        destroyCookie(ctx, "nextauth.refreshToken");
+        return {
+          redirect: {
+            destination: "/",
+            permanent: false,
+          },
+        };
+      }
+
+      //caso for error padrão, então vamos redirecionar o user para página padrão de errors
+      return {
+        redirect: {
+          destination: "/error", // Em caso de um erro não esperado, você pode redirecionar para uma página publica de erro genérico
+          permanent: false,
+        },
+      };
+    }
   };
 }
