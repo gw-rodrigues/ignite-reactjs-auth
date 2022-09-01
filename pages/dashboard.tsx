@@ -2,7 +2,6 @@ import type { GetServerSidePropsContext, NextPage } from "next";
 import { useContext, useEffect } from "react";
 import { AuthContext } from "../contexts/AuthContext";
 import { setupAPIClient } from "../services/api";
-import { api } from "../services/apiClient";
 import styles from "../styles/Home.module.css";
 import { withSSRAuth } from "../utils/withSSRAuth";
 
@@ -11,10 +10,10 @@ const Dashboard: NextPage = () => {
 
   useEffect(() => {
     if (isAuthenticated) return;
-    api
-      .get("/me")
-      .then((response) => console.log(response.data))
-      .catch((error) => console.log(error));
+    // api
+    //   .get("/me")
+    //   .then((response) => console.log(response.data))
+    //   .catch((error) => console.log(error));
   }, [isAuthenticated]);
   return (
     <div className={styles.container}>
@@ -30,6 +29,8 @@ export const getServerSideProps = withSSRAuth(
     //realiza request com setupAPiClient (que tem dentro api-axios) e todas as funções de validação e refreshToken
     const apiClient = setupAPIClient(ctx);
     const response = await apiClient.get("/me");
+    console.log(response.data);
+
     return { props: {} };
   }
 );
