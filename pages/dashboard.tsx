@@ -1,7 +1,7 @@
 import type { GetServerSidePropsContext, NextPage } from "next";
 import { useContext, useEffect } from "react";
 import { AuthContext } from "../contexts/AuthContext";
-import { UsePermissions } from "../hooks/usePermissions";
+import { UsePermissions } from "../hooks/userPermissions";
 import { setupAPIClient } from "../services/api";
 import styles from "../styles/Home.module.css";
 import { withSSRAuth } from "../utils/withSSRAuth";
