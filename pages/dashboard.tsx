@@ -40,7 +40,7 @@ export const getServerSideProps = withSSRAuth(
     //realiza request com setupAPiClient (que tem dentro api-axios) e todas as funções de validação e refreshToken
     const apiClient = setupAPIClient(ctx);
     const response = await apiClient.get("/me");
-    console.log(response.data);
+    //console.log(response.data);
 
     return { props: {} };
   }
