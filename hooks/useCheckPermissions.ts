@@ -1,11 +1,13 @@
 import { useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
+import { validateUserPermissions } from "../utils/validateUserPermissions";
 
 type UseCheckPermissionsProps = {
-  permissions?: string[] | undefined;
-  roles?: string[] | undefined;
+  permissions?: string[];
+  roles?: string[];
 };
 
+//todas HOOKS, que começam com "use*C*" so poder ser usados dentro componentes, nao funciona no lado servidor. ServerSideNext
 export function UseCheckPermissions({
   permissions,
   roles,
@@ -14,22 +16,12 @@ export function UseCheckPermissions({
 
   if (!isAuthenticated) return false;
 
-  //caso haver permissões !undefined ou > 0
-  if (permissions) {
-    //verifica da lista permissões e retorna true se user tem todas permissões, caso uma é diferente retorna falso
-    const hasAllPermissions = permissions?.every((permission) =>
-      user?.permissions.includes(permission)
-    );
-    if (!hasAllPermissions) return false;
-  }
+  //verificar se o user tem todas as permissões - retorna true ou false
+  const userHasValidPermissions = validateUserPermissions({
+    user,
+    permissions,
+    roles,
+  });
 
-  //caso haver roles !undefined ou > 0
-  if (roles) {
-    //verifica da lista roles e retorna true se user tem todas roles, caso uma é diferente retorna falso
-    const hasAllRoles = roles?.some((role) => user?.roles.includes(role));
-    if (!hasAllRoles) return false;
-  }
-
-  //caso passar todas as condições
-  return true;
+  return userHasValidPermissions;
 }
