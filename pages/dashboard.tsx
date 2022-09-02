@@ -7,7 +7,7 @@ import { withSSRAuth } from "../utils/withSSRAuth";
 import { UserHasPermissions } from "../components/userHasPermissions";
 
 const Dashboard: NextPage = () => {
-  const { user, isAuthenticated } = useContext(AuthContext);
+  const { user, isAuthenticated, signOut } = useContext(AuthContext);
 
   //   //vamos fazer verificar de permissões usando o hook/usePermissions (return true  or false)
   //   const userCanSeeMetrics = UserPermissions({
@@ -16,16 +16,10 @@ const Dashboard: NextPage = () => {
   //   });
   //   //Estamos a validar no frontend, nao tem segurança nenhuma, tem der ser feito no backend /também
 
-  useEffect(() => {
-    if (isAuthenticated) return;
-    // api
-    //   .get("/me")
-    //   .then((response) => console.log(response.data))
-    //   .catch((error) => console.log(error));
-  }, [isAuthenticated]);
   return (
     <div className={styles.container}>
       <h1>Dashboard: {user?.email}</h1>
+      <button onClick={signOut}>Sign out</button>
       <UserHasPermissions permissions={["metrics.list"]}>
         <div>Metrics!!!!</div>
       </UserHasPermissions>
