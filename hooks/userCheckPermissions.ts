@@ -1,12 +1,15 @@
 import { useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
 
-type UserPermissionsProps = {
+type UserCheckPermissionsProps = {
   permissions?: string[] | undefined;
   roles?: string[] | undefined;
 };
 
-export function UserPermissions({ permissions, roles }: UserPermissionsProps) {
+export function UserCheckPermissions({
+  permissions,
+  roles,
+}: UserCheckPermissionsProps) {
   const { user, isAuthenticated } = useContext(AuthContext);
 
   if (!isAuthenticated) return false;
