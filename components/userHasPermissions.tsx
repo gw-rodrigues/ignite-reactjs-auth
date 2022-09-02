@@ -1,5 +1,5 @@
 import { ReactNode, useContext } from "react";
-import { UserCheckPermissions } from "../hooks/userCheckPermissions";
+import { UseCheckPermissions } from "../hooks/useCheckPermissions";
 
 type UserHasPermissionsProps = {
   children: ReactNode;
@@ -13,7 +13,7 @@ export function UserHasPermissions({
   roles,
 }: UserHasPermissionsProps) {
   //vamos fazer a validação das permissões e roles, caso true poder ver o componente passado pelo children
-  const userCanSeeComponent = UserCheckPermissions({ permissions, roles });
+  const userCanSeeComponent = UseCheckPermissions({ permissions, roles });
   //caso for false retornamos null
   if (!userCanSeeComponent) return null;
 
