@@ -1,20 +1,20 @@
 import type { GetServerSidePropsContext, NextPage } from "next";
 import { useContext, useEffect } from "react";
 import { AuthContext } from "../contexts/AuthContext";
-import { UsePermissions } from "../hooks/userPermissions";
 import { setupAPIClient } from "../services/api";
 import styles from "../styles/Home.module.css";
 import { withSSRAuth } from "../utils/withSSRAuth";
+import { UserHasPermissions } from "../components/userHasPermissions";
 
 const Dashboard: NextPage = () => {
   const { user, isAuthenticated } = useContext(AuthContext);
 
-  //vamos fazer verificar de permissões usando o hook/usePermissions (return true  or false)
-  const userCanSeeMetrics = UsePermissions({
-    permissions: ["metrics.list"], //se tiver essa permissions
-    roles: ["administrator", "editor"], //se tiver 1 das roles com permissão
-  });
-  //Estamos a validar no frontend, nao tem segurança nenhuma, tem der ser feito no backend /também
+  //   //vamos fazer verificar de permissões usando o hook/usePermissions (return true  or false)
+  //   const userCanSeeMetrics = UserPermissions({
+  //     permissions: ["metrics.list"], //se tiver essa permissions
+  //     roles: ["administrator", "editor"], //se tiver 1 das roles com permissão
+  //   });
+  //   //Estamos a validar no frontend, nao tem segurança nenhuma, tem der ser feito no backend /também
 
   useEffect(() => {
     if (isAuthenticated) return;
@@ -26,7 +26,9 @@ const Dashboard: NextPage = () => {
   return (
     <div className={styles.container}>
       <h1>Dashboard: {user?.email}</h1>
-      {userCanSeeMetrics && <div>Metrics</div>}
+      <UserHasPermissions permissions={["metrics.list"]}>
+        <div>Metrics!!!!</div>
+      </UserHasPermissions>
     </div>
   );
 };
